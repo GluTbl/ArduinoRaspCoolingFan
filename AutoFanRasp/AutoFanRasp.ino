@@ -19,8 +19,8 @@ unsigned long txmili = 0;
 boolean raspdata = false;
 boolean automode = true;
 boolean motormuston = false;
-double Max = 30;
-double Min = 25;
+double Max = 36;
+double Min = 33;
 String sendable = "";
 StaticJsonDocument<500> doc;
 void myloop() {
