@@ -6,6 +6,7 @@ void setup() {
   pinMode(13, OUTPUT);
   Serial.begin(9600);
   Serial.println("Arduino ready");
+  turnOnMotor(false);
 }
 
 void loop() {
@@ -76,9 +77,9 @@ void myloop() {
 
 void turnOnMotor(boolean value) {
   if (value) {
-    digitalWrite(10, HIGH);   // turn the LED on (HIGH is the voltage level)
-  } else {
     digitalWrite(10, LOW);   // turn the LED on (HIGH is the voltage level)
+  } else {
+    digitalWrite(10, HIGH);   // turn the LED on (HIGH is the voltage level)
   }
 }
 
