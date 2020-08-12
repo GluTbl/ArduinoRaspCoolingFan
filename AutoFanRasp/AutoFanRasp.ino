@@ -1,10 +1,23 @@
 #include <math.h>
 #include <ArduinoJson.h>
+
+
+
+void blinkLed(int blkcount, int delaytime) {
+  boolean flagled = false;
+  for (int i = 0; i < blkcount; i++) {
+    flagled = !flagled;
+    digitalWrite(13, flagled);
+    delay(delaytime);
+  }
+}
 void setup() {
   // put your setup code here, to run once:
   pinMode(10, OUTPUT);
   pinMode(13, OUTPUT);
   Serial.begin(9600);
+  turnOnMotor(true);//turn on the motor for firstime
+  blinkLed(60, 100);
   Serial.println("Arduino ready");
   turnOnMotor(false);
 }
@@ -19,10 +32,18 @@ unsigned long txmili = 0;
 boolean raspdata = false;
 boolean automode = true;
 boolean motormuston = false;
-double Max = 36;
-double Min = 33;
+double Max = 29;
+double Min = 28;
 String sendable = "";
 StaticJsonDocument<500> doc;
+
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+
+void resetme() {
+  blinkLed(10, 1000);
+  resetFunc();  //call reset
+}
+
 void myloop() {
   unsigned long cur = millis();
   double curtemp = temp();
@@ -136,7 +157,7 @@ void recvWithStartEndMarkers() {
 }
 
 int deserializeerrorcounter = 0;
-void(* resetFunc) (void) = 0; //declare reset function @ address 0
+//void(* resetFunc) (void) = 0; //declare reset function @ address 0
 void showNewData() {
   if (newData == true) {
     newData = false;
@@ -147,11 +168,11 @@ void showNewData() {
       Serial.print(F("deserializeJson() failed: "));
       Serial.println(error.c_str());
       deserializeerrorcounter++;
-      if (deserializeerrorcounter > 30) {
+      if (deserializeerrorcounter > 5) {
         newData = false; //just in case
       }
-      if (deserializeerrorcounter > 40) {
-        resetFunc();  //call reset
+      if (deserializeerrorcounter > 10) {
+        resetme();
       }
       return;
     }
@@ -176,12 +197,12 @@ void showNewData() {
 }
 
 /**
- *  Sample seria data tio control via serial
- *  <{"motorstate":true}>
- *  <{"motorstate":false}>
- *  <{"motorstate":false,"max":"27","min":"22"}>
- *  <{"motorstate":false}>
+    Sample seria data tio control via serial
+    <{"motorstate":true}>
+    <{"motorstate":false}>
+    <{"motorstate":false,"max":"27","min":"22"}>
+    <{"motorstate":false}>
 
- * 
- * /
- */
+
+   /
+*/
